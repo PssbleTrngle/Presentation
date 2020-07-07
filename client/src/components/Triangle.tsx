@@ -1,28 +1,56 @@
-import React, { useRef, useState, useMemo, useCallback } from 'react';
-import { Canvas, useFrame, useThree, extend } from 'react-three-fiber';
-import { Group, Vector3 } from 'three';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, extend, useFrame, useThree } from 'react-three-fiber';
+import { Euler, Group, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { ConvexBufferGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
+import TWEEN from '@tweenjs/tween.js'
 
-extend({ OrbitControls })
+extend({ OrbitControls, ConvexBufferGeometry })
 
 const TriangleCanvas = () => {
+    const [focused, setFocused] = useState(false);
+
+    useEffect(() => {
+        const a = (d: number) => {
+            TWEEN.update(d);
+            requestAnimationFrame(a);
+        }
+        requestAnimationFrame(a);
+    }, [])
+
     return <div className='triangle'>
-        <Canvas orthographic camera={{ zoom: 40 }} style={{ background: '#333333' }}>
+        <Canvas orthographic camera={{ zoom: 40 }} style={{ height: '400px', width: '400px', background: '#EEEEEE' }}
+            onMouseOver={() => setFocused(true)}
+            onMouseOut={() => setFocused(false)}>
             <ambientLight />
-            <pointLight position={[10, 10, 10]} />
+            <pointLight position={[10, 10, 8]} />
             <Triangle />
-            <Controls />
+            <Controls {...{ focused }} />
         </Canvas>
     </div>
 }
 
-const Controls = () => {
+const Controls = ({ focused }: { focused: boolean }) => {
     const controls = useRef<OrbitControls>()
     const { camera, gl } = useThree()
+
     useFrame(() => controls.current?.update())
 
-    //@ts-ignore
+    useEffect(() => {
+        if (!focused) {
+            const { x, y, z } = camera.position;
+            new TWEEN.Tween({ x, y, z })
+                .to({ x: 0, y: 0, z: 5 })
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate(({ x, y, z }) => camera.position.set(x, y, z))
+                .duration(200)
+                //@ts-ignore
+                .start();
+        }
+    }, [focused])
+
     return <orbitControls
+        enabled enablePan enableRotate enableZoom={false}
         ref={controls} args={[camera, gl.domElement]}
         rotateSpeed={0.5}
     />
@@ -32,28 +60,35 @@ const Triangle = () => {
     const ref = useRef<Group>();
     const [hovered, setHover] = useState(false)
 
-    useFrame(() => {
-        const { current } = ref;
-        //if (current) current.rotation.x = current.rotation.y += 0.01;
-        if (current) current.rotation.x = current.rotation.y = 0.5;
-    })
+    const thickness = 1;
+    const length = 5 * thickness;
+    const props: PartProps = { hovered, length, thickness }
+
+    useEffect(() => {
+        ref.current?.setRotationFromEuler(new Euler(-0.55, -0.8, 0.135))
+    }, [ref.current])
 
     return <group
-        onPointerOver={(e) => setHover(true)}
-        onPointerOut={(e) => setHover(false)}
+        onPointerOver={() => setHover(true)}
+        onPointerOut={() => setHover(false)}
         position={[0, 0, 0]}
         {...{ ref }}>
         {new Array(3).fill(null).map((_, index) =>
-            <Part key={index} {...{ hovered, index }} />
+            <Part key={index} {...props} {...{ index }} />
         )}
+        <Piece {...props} />
     </group>
 }
 
-const Part = (props: { index: number, hovered: boolean }) => {
-    const { index, hovered } = props;
+interface PartProps {
+    hovered: boolean;
+    length: number;
+    thickness: number;
+}
 
-    const thickness = 1;
-    const length = 5 * thickness;
+const Part = (props: { index: number } & PartProps) => {
+    const { index, hovered, length, thickness } = props;
+
     const dist = length - thickness * 3;
     const l = index === 2 ? length - (thickness * 2) : length;
 
@@ -65,31 +100,30 @@ const Part = (props: { index: number, hovered: boolean }) => {
         (index === 2 ? l / 2 : 0) - (length / 2),
     ] as [number, number, number];
 
-    const slide = new Float32Array([
-        0, 1, 1,
-        1, 1, 1,
-        0, 0, 1,
-        1, 0, 1,
-        0, 1, 0,
-        1, 1, 0,
-        0, 0, 0,
-        1, 0, 0,
-    ]);
-
     return <mesh {...{ position }}>
-        {index === 2 &&
-            <bufferGeometry attach="geometry">
-                <bufferAttribute
-                    attachObject={['attributes', 'position']}
-                    count={slide.length / 3}
-                    array={slide}
-                    itemSize={3}
-                />
-            </bufferGeometry>
-        }
         <boxBufferGeometry attach="geometry" args={size} />
         <meshStandardMaterial attach="material" color={hovered ? 'hotpink' : 'orange'} />
     </mesh >
+}
+
+const Piece = (props: PartProps) => {
+    const { length, thickness, hovered } = props;
+
+    const dist = length - thickness * 3;
+
+    const slide = useMemo(() => [
+        [0, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+        [1, 0, 1],
+        [1, 0, 0],
+        [1, 1, 0],
+    ].map(v => new Vector3(...v)), [thickness]);
+
+    return <mesh position={[dist, - length / 2, thickness].map(n => n - thickness / 2) as [number, number, number]}>
+        <convexBufferGeometry args={[slide]} attach="geometry" />
+        <meshStandardMaterial attach="material" color={hovered ? 'hotpink' : 'orange'} />
+    </mesh>
 }
 
 export default TriangleCanvas;

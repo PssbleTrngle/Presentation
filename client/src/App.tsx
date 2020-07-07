@@ -2,7 +2,7 @@ import React, { MemoExoticComponent, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, useLocation } from 'react-router-dom';
 import Cell from './components/Cell';
 import Home from './pages/Home';
-import './style/app.scss';
+//import './style/app.scss';
 
 const App = () => {
 

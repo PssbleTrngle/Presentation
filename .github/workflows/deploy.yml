@@ -1,27 +1,28 @@
-name: Deploy to Dockerhub
+name: Build Docker Container
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ master ]
-    paths: 
-      - docker/**
-      - client/**
-      - server/**
-  repository_dispatch:
-    types: [deploy]
-    
+    branches: 
+      - master
+      - develop
+    paths-ignore:
+      - README.md
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Create .env file
-      run: touch ./.env && echo "${{ secrets.DOCKER_ENV }}" > ./.env 
-      working-directory: docker
-    - name: Build
-      run: docker-compose build server
-      working-directory: docker
-    - name: Login
-      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-    - name: Push
-      run: docker push dockergelb/diary
+      - uses: actions/checkout@v2
+
+      - name: Extract branch name
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: branch
+
+      - name: Build & Publish Container
+        uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          image_name: ${{ secrets.DOCKER_USERNAME }}/portfolio
+          push_image_and_stages: ${{ steps.branch.outputs.branch == 'master' }}

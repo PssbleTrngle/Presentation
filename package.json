@@ -37,7 +37,8 @@
     "react-three-fiber": "^4.2.21",
     "react-transition-group": "^1.2.1",
     "three": "^0.118.3",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "use-debounce": "^5.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

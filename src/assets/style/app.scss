@@ -97,8 +97,15 @@ img {
 }
 
 .triangle {
-    height: 500px;
-    width: 500px;
+    height: 40vw;
+    width: 40vw;
+    
+    canvas {
+        &:focus {
+            border: none;
+            outline: none;
+        }
+    }
 }
 
 @import "./img.scss";

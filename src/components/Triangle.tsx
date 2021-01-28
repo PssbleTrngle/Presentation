@@ -11,7 +11,7 @@ const loader = new OBJLoader();
 function useModel(name: string) {
     const [model, setModel] = useState<Object3D>();
 
-    const path = process.env.PUBLIC_URL + `/assets/object/${name}.obj`
+    const path = process.env.PUBLIC_URL + `/static/media/${name}.obj`
     console.log(`Loading model '${name}' '${path}'`)
 
     useEffect(() => {

@@ -1,8 +1,12 @@
 import React from 'react';
-import Triangle from '../components/Triangle';
+import Triangle from '../components/Canvas';
+import Curtain from '../components/Curtain';
 
 const Home = () => {
-    return <Triangle />
+    return <>
+        <Curtain />
+        <Triangle />
+    </>
 }
 
 export default Home;

@@ -1,0 +1,20 @@
+@import "./vars.scss";
+@import "./mixins.scss";
+
+.triangle {
+    height: 60vw;
+    width: 60vw;
+    
+    max-height: 95vh;
+    max-width: 95vh;
+
+    background-color: lighten($bg, 10%);
+    clip-path: circle(50% at 50% 50%);
+
+    canvas {
+        &:focus {
+            border: none;
+            outline: none;
+        }
+    }
+}

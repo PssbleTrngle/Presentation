@@ -1,0 +1,60 @@
+@import "./vars.scss";
+@import "./mixins.scss";
+
+.code {
+    $margin: 10px;
+    top: $margin;
+    left: $margin;
+    width: calc(100vw - $margin);
+    height: calc(100vh - $margin);
+    position: fixed;
+    pointer-events: none;
+
+    z-index: 10;
+
+    @keyframes in {
+        from {
+            margin-left: -100vw;
+        }
+        to {
+            margin-left: 100vw;
+        }
+    }
+
+    code {
+        p {
+            position: relative;
+            $padding: 10px;
+            animation: in 1.5s linear both;
+            padding: $padding;
+            border-radius: $padding;
+            margin-left: -2 * $padding;
+
+            &:not(:first-child) {
+                margin-top: -2 * $padding;
+            }
+        }
+    }
+}
+
+.curtain {
+    position: fixed;
+    z-index: 9;
+    
+    $marg: 360px;
+    margin-left: -100vw;
+    transition: margin 1.7s linear;
+
+    &.reveal {
+        margin-left: calc(100vw + #{$marg});
+    }
+
+    clip-path: polygon(200px 0%, 100% 0%, 100% 100%, 0% 100%);
+
+    background: lighten($bg, 5%);
+
+    width: calc(200vw + #{$marg});
+    left: -$marg;
+    height: 100%;
+    top: 0;
+}

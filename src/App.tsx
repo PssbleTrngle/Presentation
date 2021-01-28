@@ -50,9 +50,9 @@ const Page = (page: IPage) => {
    }, [id]);
 
    return (
-      <Cell area='page' id={id}>
+      <section className='page' id={id}>
          <page.component />
-      </Cell>
+      </section>
    );
 }
 

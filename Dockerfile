@@ -3,8 +3,8 @@ FROM node:latest as build
 WORKDIR /app
 
 # Install dependencies
-COPY package.json .
-RUN npm install --no-audit --no-package-lock
+COPY package*.json .
+RUN npm install --no-audit
 
 # Build application
 COPY src ./src/

@@ -8,11 +8,10 @@ import { useDebouncedCallback } from 'use-debounce';
 
 const loader = new OBJLoader();
 
-function useModel(name: string) {
+function useModel(path: string) {
     const [model, setModel] = useState<Object3D>();
-    const path = require(`../assets/object/${name}.obj`)
 
-    console.log(`Loading model '${name}' via '${path}'`)
+    console.log(`Loading model '${path}'`)
 
     useEffect(() => {
         loader.loadAsync(path)
@@ -155,7 +154,7 @@ const Triangle = () => {
     const ref = useRef<Mesh>();
     const [hovered, setHover] = useState(false)
 
-    const model = useModel('triangle');
+    const model = useModel(require('../assets/object/triangle.obj'));
     if (!model) return null;
 
     const [triangle] = model.children as [Mesh];

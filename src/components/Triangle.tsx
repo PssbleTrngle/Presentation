@@ -12,6 +12,8 @@ function useModel(name: string) {
     const [model, setModel] = useState<Object3D>();
     const path = require(`../assets/object/${name}.obj`)
 
+    console.log(`Loading model '${name}' via '${path}'`)
+
     useEffect(() => {
         loader.loadAsync(path)
             .then(m => setModel(m))

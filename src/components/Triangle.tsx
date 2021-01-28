@@ -11,9 +11,7 @@ const loader = new OBJLoader();
 function useModel(name: string) {
     const [model, setModel] = useState<Object3D>();
 
-    console.log(require('../assets/object/triangle.obj'))
-    const path = process.env.PUBLIC_URL + `/static/media/${name}.obj`
-    console.log(`Loading model '${name}' '${path}'`)
+    const path = require(`../assets/object/${name}.obj`).default
 
     useEffect(() => {
         loader.loadAsync(path)

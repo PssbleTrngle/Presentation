@@ -3,7 +3,7 @@ FROM node:latest as build
 WORKDIR /app
 
 # Install dependencies
-COPY package*.json .
+COPY package*.json ./
 RUN npm install --no-audit
 
 # Build application

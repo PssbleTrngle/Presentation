@@ -99,7 +99,10 @@ img {
 .triangle {
     height: 40vw;
     width: 40vw;
-    
+
+    background-color: lighten($bg, 10%);
+    clip-path: circle(50% at 50% 50%);
+
     canvas {
         &:focus {
             border: none;
